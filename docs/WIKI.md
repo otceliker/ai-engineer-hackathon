@@ -283,6 +283,46 @@ held=150, 4 rounds, K=6, 2 epochs.
    upcast blow past 24 GB. Fix: `gradient_checkpointing_enable()` + `use_cache=False`
    + default batch 4. (Toy smoke missed it — 20-token sequences were too short to OOM.)
 
+### Result — run 1 (Prealgebra, Qwen2.5-1.5B, held-out N=150, K=6, 4 rounds, 2 epochs)
+
+| | base | r0 | r1 | r2 | r3 |
+|---|---|---|---|---|---|
+| held-out acc | 65.3% | 67.3% | 62.0% | 63.3% | 68.7% |
+| Δ vs base (pp) | — | +2.0 | −3.3 | −2.0 | +3.3 |
+| McNemar p vs base | — | 0.66 | 0.30 | 0.61 | 0.27 |
+| fail→pass / pass→fail | — | 12/9 | 5/10 | 6/9 | 9/4 |
+| train-new solved | — | 298 | 13 | 8 | 5 |
+| harvested / cum pool | — | 823/823 | 68/891 | 35/926 | 23/949 |
+| box rate | 0.80 | 0.87 | 0.87 | 0.89 | 0.89 |
+
+![accuracy](assets/star_prealgebra/1_accuracy.png)
+![harvest](assets/star_prealgebra/3_harvest.png)
+
+**Verdict: FLAT / within-noise — NOT a real climb.**
+- **No significant improvement at any round** (every McNemar p ≥ 0.27). The curve wiggles
+  around the 65.3% baseline (67→62→63→69) and dips *below* base in rounds 1–2. The
+  round-3 +3.3pp is 9 fail→pass vs 4 pass→fail — noise at N=150.
+- **Train-side frontier collapses after round 0: 298 → 13 → 8 → 5.** Round 0 harvests
+  823 traces from 400 problems; later "improved" adapters crack almost no *new* problems.
+  This is **sharpening, not bootstrapping** — the exact failure mode we instrumented for.
+- fail→pass / pass→fail churn is ~balanced → trading problems, not netting gains (noise +
+  mild self-generated-style overfitting; round 1's dip lost 10 previously-solved problems).
+- box rate ~0.87–0.89 (zero-shot, no few-shot scaffold) — stable, so format isn't driving
+  the round-to-round moves, but ~12% non-emission caps measurable accuracy.
+
+**Observations:**
+- Base came in at **65.3%** on the 150-problem train-split held-out (greedy, zero-shot +
+  instruction) — higher than the 52.4% test-split figure, so *less headroom* than hoped.
+- **Training dominated wall-clock, not generation** (train ~290–350s vs gen ~130–170s/round)
+  — opposite of the brief's expectation, because train = 2 epochs over a growing ~900-trace
+  pool with gradient checkpointing. Generation would dominate again at larger K / pool.
+
+**Implication:** plain RFT self-training on a *fixed* pool plateaus at this scale. This is
+the empirical motivation for (a) **rationalization** (manufacture traces for unsolved
+problems → actually expand the frontier) and (b) the **baseline arms** (does even this much
+movement beat using the same pool in-context?). Both already scoped; this result green-lights
+pursuing them rather than scaling the plain loop.
+
 ## 8. Open items / next steps
 
 - [ ] Restore neptune `llm-server.service` at hackathon end (`sudo systemctl start`).
