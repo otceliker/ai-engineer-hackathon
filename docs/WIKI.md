@@ -252,8 +252,36 @@ held-out from MATH test. Expect +3–8pp total with diminishing returns (no hock
    zero-shot, box-rate becomes a real signal; fix a ~400-problem train pool for loop
    rounds, scale only for the final headline.
 
-Status: **proposed.** Build the plain single-category loop first (scope rule), but
-instrument frontier expansion from round 0. Decision pending.
+Status: **GREEN-LIT, building.** Designer accepted the full review; sequencing locked:
+plain loop first, frontier instrumented from round 0, rationalization as an explicit
+A/B only after. All five review items folded into the build.
+
+**De-risk #4 PASSED (2026-06-27):** vLLM-LoRA round-trip verified on this box.
+PEFT-train (peft 0.19.1) → save adapter → vLLM 0.23 load via `LoRARequest`
+(`enable_lora=True, max_lora_rank=16, enforce_eager=True, VLLM_USE_FLASHINFER_SAMPLER=0`)
+→ generate. A toy adapter trained for 6 steps visibly changed behavior (base rambled
+without a box; adapter emitted `\boxed{15}`). No errors. → use `LoRARequest` for
+generation; teardown/rebuild vLLM between gen and train (both need the full 24 GB).
+Trainer: `scripts/lora_train.py` (manual loop, no HF Trainer; LoRA from base, rank 16).
+
+**Loop CLOSES end-to-end (2026-06-27).** `scripts/star_loop.py` (orchestrator) +
+`scripts/star_gen.py` (vLLM gen worker) + `scripts/lora_train.py` (PEFT). Smoke
+(pool=20, held=20, 2 rounds, K=4): base 70% → r0 80% → r1 80%; r1 harvested only 3 new
+traces with **train-new=0** — the predicted plateau on a fixed pool, visible even at
+toy scale, and the instrumentation caught it. Headline run launched: pool=400,
+held=150, 4 rounds, K=6, 2 epochs.
+
+**Two infra gotchas that cost real time (both fixed in `star_loop.py`):**
+1. **vLLM EngineCore orphans the GPU.** It's a `multiprocessing` spawn child in its
+   OWN session — not findable by name, and `killpg` of the gen subprocess misses it.
+   It keeps the full ~22 GB after the parent exits → the next step (training) OOMs.
+   Fix: after each gen, `kill_gpu_procs()` kills whatever PID still holds GPU memory
+   (safe because llm-server is stopped → nothing else legitimately uses the GPU), then
+   `ensure_gpu_free()` polls `nvidia-smi` until VRAM actually drops.
+2. **Trainer OOM in cross-entropy over Qwen's 152k vocab.** Real traces are ~600–800
+   tokens; at batch 8 with no gradient checkpointing the `(B,S,152064)` logits + CE
+   upcast blow past 24 GB. Fix: `gradient_checkpointing_enable()` + `use_cache=False`
+   + default batch 4. (Toy smoke missed it — 20-token sequences were too short to OOM.)
 
 ## 8. Open items / next steps
 
