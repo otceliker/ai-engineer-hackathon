@@ -323,6 +323,17 @@ problems → actually expand the frontier) and (b) the **baseline arms** (does e
 movement beat using the same pool in-context?). Both already scoped; this result green-lights
 pursuing them rather than scaling the plain loop.
 
+### Rationalization (STaR's missing half) — A/B running
+Decision: **both, rationalization first.** Implemented as `--rationalize` in `star_loop.py`:
+for train problems still unsolved after the normal harvest, hint the gold answer
+(`build_rat_prompt`), sample `kr` solutions, keep only those that (a) Math-Verify against
+gold, (b) pass the false-positive guard, (c) don't leak "we're told the answer"
+(`LEAK_PHRASES`). Train on the **bare problem → trace** (hint stripped). New metrics:
+`n_rationalized`, `rat_new_solved`. Smoke OK (cracked a problem sampling missed). Full A/B
+launched: identical splits/seed to run 1, `--rationalize --kr 4`. The test: does rationalized
+frontier expansion (manufacturing traces for the ~100 problems sampling can't solve) turn the
+flat curve into a real climb, vs. the plain loop's 298→13→8→5 collapse?
+
 ## 8. Open items / next steps
 
 - [ ] Restore neptune `llm-server.service` at hackathon end (`sudo systemctl start`).

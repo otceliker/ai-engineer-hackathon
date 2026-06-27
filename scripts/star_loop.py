@@ -86,6 +86,24 @@ def build_prompt(tok, problem):
     return tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
 
 
+# Rationalization (STaR): hint the gold answer so the model can produce a trace for a
+# problem it failed forward. Train on the BARE problem (build_prompt), not this hint.
+def build_rat_prompt(tok, problem, gold):
+    user = (problem + f"\n\n(For reference, the correct final answer is {gold}. Give a complete "
+            "step-by-step solution that derives it from scratch, ending with the answer in \\boxed{}.)")
+    msgs = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
+    return tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+
+
+LEAK_PHRASES = ("we are told", "we are given the answer", "given that the answer",
+                "the correct final answer is", "for reference", "since the answer is",
+                "as given", "we know the answer is")
+
+
+def leaks(text):
+    return any(s in text.lower() for s in LEAK_PHRASES)
+
+
 def grade(text, gold):
     try:
         return bool(verify(parse(gold), parse(text)))
@@ -136,6 +154,9 @@ def main():
     ap.add_argument("--max-tokens", type=int, default=512)
     ap.add_argument("--epochs", type=float, default=2)
     ap.add_argument("--cap", type=int, default=3, help="max traces kept per problem")
+    ap.add_argument("--rationalize", action="store_true",
+                    help="STaR rationalization: hint gold on failed problems to expand the frontier")
+    ap.add_argument("--kr", type=int, default=4, help="samples/problem when rationalizing")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--tag", default="")
     args = ap.parse_args()
@@ -177,9 +198,9 @@ def main():
     mf = open(metrics_path, "w", newline="")
     writer = csv.writer(mf)
     writer.writerow(["round", "heldout_acc", "d_vs_base_pp", "n_harvested", "cum_pool",
-                     "heldout_new_vs_base", "train_new_solved", "box_rate",
-                     "mcnemar_p_vs_base", "t_gen", "t_grade", "t_train", "t_eval"])
-    writer.writerow([-1, f"{base_acc:.4f}", 0, 0, 0, 0, 0,
+                     "heldout_new_vs_base", "train_new_solved", "n_rationalized", "rat_new_solved",
+                     "box_rate", "mcnemar_p_vs_base", "t_gen", "t_grade", "t_train", "t_eval"])
+    writer.writerow([-1, f"{base_acc:.4f}", 0, 0, 0, 0, 0, 0, 0,
                      sum("\\boxed" in bg[i][0] for i in base_correct) / len(held),
                      1.0, 0, 0, 0, 0])
     flip = {}
@@ -204,6 +225,26 @@ def main():
             if kept and i not in solved_ever:
                 solved_ever.add(i); new_solved += 1
         t_grade = time.time() - t0
+        # 2b) rationalization: for still-unsolved problems, hint gold and keep verified traces
+        n_rationalized = 0; rat_new = 0
+        if args.rationalize:
+            unsolved = [r for r in pool if len(accum[r["id"]]) == 0]
+            if unsolved:
+                t0 = time.time()
+                rat_prompts = [{"id": r["id"], "prompt": build_rat_prompt(tok, r["problem"], gold[r["id"]])}
+                               for r in unsolved]
+                ratt = gen(args.base, prev_adapter, rat_prompts,
+                           os.path.join(rd, "rationalize.jsonl"), args.kr, args.temp, args.max_tokens)
+                for r in unsolved:
+                    i = r["id"]
+                    kept = [tx for tx in ratt.get(i, []) if keep_trace(tx, gold[i]) and not leaks(tx)]
+                    added = False
+                    for tx in kept:
+                        if tx not in accum[i] and len(accum[i]) < args.cap:
+                            accum[i].append(tx); n_rationalized += 1; added = True
+                    if added and i not in solved_ever:
+                        solved_ever.add(i); rat_new += 1
+                t_gen += time.time() - t0      # fold rationalize-gen into generation time
         # write cumulative pool + training data
         pool_path = os.path.join(rd, "correct_pool.jsonl")
         train_path = os.path.join(rd, "train_data.jsonl")
@@ -240,12 +281,14 @@ def main():
         json.dump({"t_gen": t_gen, "t_grade": t_grade, "t_train": t_train, "t_eval": t_eval},
                   open(os.path.join(rd, "timing.json"), "w"))
         writer.writerow([t, f"{acc:.4f}", f"{(acc-base_acc)*100:.1f}", n_harvested, cum_pool,
-                         new_vs_base, new_solved, f"{box_rate:.3f}", f"{p:.4f}",
+                         new_vs_base, new_solved, n_rationalized, rat_new,
+                         f"{box_rate:.3f}", f"{p:.4f}",
                          f"{t_gen:.1f}", f"{t_grade:.1f}", f"{t_train:.1f}", f"{t_eval:.1f}"])
         mf.flush()
         print(f"[round {t}] held-out {acc:.1%} ({(acc-base_acc)*100:+.1f}pp vs base) | "
-              f"frontier+{new_vs_base} | harvested {n_harvested} | pool {cum_pool} | "
-              f"train-new {new_solved} | box {box_rate:.0%} | McNemar p={p:.3f}", flush=True)
+              f"frontier+{new_vs_base} | harvested {n_harvested} (+{n_rationalized} rat) | "
+              f"pool {cum_pool} | train-new {new_solved}+{rat_new}rat | box {box_rate:.0%} | "
+              f"McNemar p={p:.3f}", flush=True)
         prev_adapter = adapter
 
     mf.close()
