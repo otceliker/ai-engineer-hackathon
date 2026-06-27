@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Wiki reminder: append any new finding, results table, image, design decision, gotcha, or verdict to docs/WIKI.md this turn (trim later); keep RESULTS.md headline numbers in sync.\"",
+            "statusMessage": "wiki reminder"
+          }
+        ]
+      }
+    ]
+  }
+}
