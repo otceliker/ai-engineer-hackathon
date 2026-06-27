@@ -1,0 +1,11 @@
+# Inference/eval stack for scripts/eval_math.py (GPU host, e.g. neptune).
+# Heavier than the base requirements.txt; install on top of it:
+#   uv pip install -r requirements.txt -r requirements-eval.txt
+#
+# Notes for fresh boxes (learned setting this up):
+#   - vLLM shells out to `ninja`; ensure <venv>/bin is on PATH at runtime.
+#   - flashinfer's JIT sampler kernels fail to build here; we uninstall it
+#     and run with VLLM_USE_FLASHINFER_SAMPLER=0 (native sampling).
+#   - eval_math.py defaults to enforce_eager (no torch.compile) for reliability.
+vllm==0.23.0
+ninja==1.13.0

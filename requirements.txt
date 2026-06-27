@@ -1,0 +1,6 @@
+# Download / data tooling for the hackathon repo.
+# Pinned exact versions. Regenerate with: uv pip freeze
+huggingface_hub[hf_transfer]==0.34.4
+datasets==3.6.0
+# Math-answer equivalence checker for MATH grading (antlr extra = LaTeX parsing)
+math-verify[antlr4_13_2]==0.9.0

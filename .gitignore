@@ -9,6 +9,16 @@ __pycache__/
 .env
 .env.*
 
+# Model weights & datasets (large — never commit)
+models/
+data/
+*.safetensors
+*.gguf
+*.bin
+
+# Eval outputs (per-example JSONL with full generations — large)
+results/
+
 # Node
 node_modules/
 dist/
