@@ -193,7 +193,15 @@ The vector only ever does nothing or hurts, monotonically.
 Best positive config: **layer 16, α=0.1 → 56.7% = +0.0pp** (5 fail→pass vs 5
 pass→fail, McNemar p=1.00). Net zero.
 
-### Verdict: **FLAT / DEGRADE**
+**Controls (winner's-curse-matched, each null's best Δ over the α-sweep at layer 16):**
+- shuffled-label: −8.3, −1.7, −6.7, +0.0, −1.7 → **null max +0.0pp**
+- random unit:    −6.7, +0.0, −8.3, −6.7, −5.0 → **null max +0.0pp**
+
+The real vector's best (+0.0pp) does **not** beat the null max (+0.0pp) — they tie at
+zero, and *no* config (real or null) ever produced a positive Δ. The direction is
+indistinguishable from noise.
+
+### Verdict: **DEGRADE** (printed; FLAT/DEGRADE boundary — best real Δ ≤ 0 everywhere)
 Best real Δ is 0.0pp — it cannot clear the +10pp WIN bar regardless of controls.
 Pushing along the difference-of-means direction never recovers a single net problem;
 the only safe point is α≈0. The direction is **entangled with general capability**,
@@ -206,6 +214,46 @@ a "be-more-careful/easy-problem" axis rather than a skill primitive — the
 shuffled-label control is what would have licensed any causal read.
 
 ---
+
+## 7b. Direction 2 (proposed, not yet built): grader-driven LoRA self-improvement loop
+
+The pivot after steering came back FLAT: if LoRA is the workhorse, can it *bootstrap*?
+Closed loop on one category — model attempts problems, grader keeps correct traces,
+train a LoRA on them, held-out accuracy climbs over 3–5 rounds. Essentially STaR /
+rejection-sampling fine-tuning (RFT/ReST).
+
+Locked design (from the brief): generate with latest adapter, **train from base** on
+the cumulative pool every round; sample (T≈0.8, K≈4–8) to harvest, greedy to eval;
+fixed held-out, disjoint IDs, no leakage; **frontier expansion** (held-out problems
+solved in later rounds that round-0 couldn't) is the headline metric — it's what makes
+it self-improvement vs. resampling. vLLM for generate+eval (the bottleneck), PEFT for
+training. Reference: Qwen2.5-1.5B-Instruct, Prealgebra, train pool from MATH train /
+held-out from MATH test. Expect +3–8pp total with diminishing returns (no hockey stick).
+
+**Assessment (CC review) — ranked risks + suggested changes:**
+1. **Frontier expansion is the make-or-break and is fragile at 1.5B.** Problems the
+   base fails 0/K are hard; a LoRA on easy traces rarely cracks them → risk of ~0
+   frontier expansion = RFT sharpening, not bootstrapping. **Add STaR rationalization**
+   (hint the gold answer on failed *train* problems, generate rationale backward,
+   verify, add to pool — leakage-free, attacks the exact metric). Higher-leverage than
+   the parked self-curriculum extension. Also log *train-side* new-problems-solved
+   (leading indicator).
+2. **False-positive traces (right answer, wrong reasoning).** Math-Verify checks final
+   answer only; short Prealgebra answers invite lucky hits that teach bad reasoning.
+   Guard: require real `\boxed{}`, drop ultra-short answer-only traces.
+3. **N≈82 power trap (same lesson as the steering test).** +3–8pp sits inside the
+   ~5.5pp SE at N=82 → curve may be noise. Lean on the round-N-vs-round-0 flip matrix /
+   **McNemar** (already logged); consider enlarging frozen held-out to 150–200 (disjoint
+   IDs is the real leakage constraint, not "must be test split").
+4. **vLLM-LoRA path unproven on this box** (cf. our flashinfer/ninja/enforce_eager
+   fights). Smoke-test round-0 train→PEFT-save→vLLM-load(LoRARequest)→generate before
+   trusting the loop; prefer teardown/rebuild over hot-swap.
+5. Cheap specifics: train on `(problem→trace)` with few-shot scaffold stripped → eval
+   zero-shot, box-rate becomes a real signal; fix a ~400-problem train pool for loop
+   rounds, scale only for the final headline.
+
+Status: **proposed.** Build the plain single-category loop first (scope rule), but
+instrument frontier expansion from round 0. Decision pending.
 
 ## 8. Open items / next steps
 
