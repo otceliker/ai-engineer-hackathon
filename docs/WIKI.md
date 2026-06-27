@@ -330,9 +330,34 @@ for train problems still unsolved after the normal harvest, hint the gold answer
 gold, (b) pass the false-positive guard, (c) don't leak "we're told the answer"
 (`LEAK_PHRASES`). Train on the **bare problem → trace** (hint stripped). New metrics:
 `n_rationalized`, `rat_new_solved`. Smoke OK (cracked a problem sampling missed). Full A/B
-launched: identical splits/seed to run 1, `--rationalize --kr 4`. The test: does rationalized
-frontier expansion (manufacturing traces for the ~100 problems sampling can't solve) turn the
-flat curve into a real climb, vs. the plain loop's 298→13→8→5 collapse?
+launched: identical splits/seed to run 1, `--rationalize --kr 4`.
+
+**Result — rationalization BACKFIRED (significant).** Same base (65.3%), same splits.
+
+| round | base | r0 | r1 | r2 | r3 |
+|---|---|---|---|---|---|
+| plain RFT | 65.3 | 67.3 | 62.0 | 63.3 | **68.7** |
+| + rationalization | 65.3 | 67.3 | 66.7 | 62.0 | **60.0** |
+
+![plain vs rat](assets/star_prealgebra/6_plain_vs_rat.png)
+
+- **Final-round paired head-to-head: plain 103/150 vs rat 90/150 — 13 plain-better, 0 rat-better,
+  McNemar p < 0.001.** Rationalization is significantly worse. vs base it ends at p=0.057 (near-sig
+  *degradation*: 3 fail→pass / 11 pass→fail).
+- **It expanded the frontier as designed** — manufactured gold-verified traces for 36 problems
+  (rat_new 22→10→1→3) sampling couldn't crack — **and still hurt.** The held-out curve declines
+  monotonically as more rationalized traces enter the pool.
+- **Lesson: frontier expansion is necessary-but-not-sufficient; trace *quality* dominates.**
+  Reasoning *backward from a given answer* is post-hoc confabulation — reaches the gold number
+  without a derivation the model could honestly produce — so training on it teaches the 1.5B to
+  confabulate and poisons the pool. At this scale the bottleneck was never trace *coverage* for
+  hard problems; it's that hinted traces are bad data. (Rationalization was CC's top recommendation;
+  the A/B refuted it for this setting — which is why we A/B'd rather than assumed.)
+
+**Combined STaR verdict:** at 1.5B / Prealgebra, neither plain RFT (flat, within noise) nor
+rationalization (significant degradation) bootstraps capability from self-generated data on a
+fixed pool. Next: the **baseline arms** — does using the same pool *in-context* (retrieval /
+prompt-opt) do any better than weight updates that went flat-to-negative?
 
 ## 8. Open items / next steps
 
