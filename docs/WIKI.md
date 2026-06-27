@@ -359,6 +359,47 @@ rationalization (significant degradation) bootstraps capability from self-genera
 fixed pool. Next: the **baseline arms** — does using the same pool *in-context* (retrieval /
 prompt-opt) do any better than weight updates that went flat-to-negative?
 
+### Arm A — retrieval (BM25) result + three-way verdict
+`scripts/arm_retrieval.py`: same pool (the LoRA run's per-round `correct_pool.jsonl`) and same
+held-out (from manifest); for each held-out problem, BM25-retrieve top-3 solved (problem, trace)
+pairs as worked examples, generate greedy, grade. Zero-dependency BM25 (no embedder risk).
+Logs BM25 similarity per problem (near-duplicate instrumentation). Retrieval curve:
+66.7 → 65.3 → 64.0 → 66.0 — **flat**, hovering at base.
+
+**Final-round paired McNemar (same 150 held-out):**
+
+| comparison | scores | flips | p |
+|---|---|---|---|
+| LoRA vs retrieval | 103 vs 99 | 11/7 | **0.48 (tied)** |
+| LoRA vs rationalization | 103 vs 90 | 13/0 | <0.001 |
+| retrieval vs rationalization | 99 vs 90 | 13/4 | 0.049 |
+
+![all arms](assets/star_prealgebra/7_all_arms.png)
+
+**Headline: LoRA self-training is statistically TIED with BM25 retrieval of the same traces** —
+weight updates bought nothing over using the pool in-context. (Retrieval didn't win, so the
+near-duplicate caveat is moot.) Arm B (prompt-opt) scoped as optional; the picture is already
+robust, so deprioritized. `scripts/star_compare.py` / `scripts/final_summary.py` produce the
+overlays + pairwise tests.
+
+---
+
+## Project-wide verdict (so far)
+
+At **1.5B on MATH / Prealgebra**, every cheap "self-improvement primitive" we tested is
+flat-to-negative on a held-out set, instrumented with paired McNemar to avoid fooling ourselves:
+
+| approach | result |
+|---|---|
+| Activation steering (diff-of-means) | FLAT / DEGRADE — indistinguishable from noise + matched controls |
+| LoRA self-training (RFT) | FLAT — within noise of the 65.3% base |
+| Rationalization (STaR backward) | **DEGRADE** — significant; confabulated traces poison the pool |
+| Retrieval (BM25, in-context) | FLAT — **tied with LoRA** → weight updates unnecessary |
+
+Two actionable findings: (1) **rationalization actively hurts** at this scale; (2) whatever
+marginal value the self-generated pool holds is **fully captured in-context** — no training
+needed. A clean, well-instrumented negative result. Honest > hockey-stick.
+
 ## 8. Open items / next steps
 
 - [ ] Restore neptune `llm-server.service` at hackathon end (`sudo systemctl start`).
