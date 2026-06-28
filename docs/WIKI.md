@@ -416,10 +416,26 @@ best non-significant ~+3pp). Reframe: at 1.5B the bottleneck is **selection at p
 capability. Weight updates (LoRA/rationalization) couldn't realize the latent skill; cheap
 inference-time selection does. This is "what we can do with 1B."
 
-Caveat: these numbers are on the 400-problem **train pool** (temp 0.8, same set for pass@1 and
-maj). Held-out confirmation (maj@K on the same 150 held-out vs the 65.3% greedy baseline) is the
-clean comparable claim — pending. Selection ceiling is pass@6 (76% / 51.5%); a verifier/reward
-model could push toward it (best-of-N), but majority vote is the free first win.
+### Held-out confirmation (clean, comparable to every other method)
+`scripts/self_consistency.py` — sample K=8 (temp 0.8) on the SAME 150 Prealgebra held-out,
+majority-vote, paired McNemar vs the 65.3% greedy baseline:
+
+| method (Prealgebra, N=150 held-out) | acc | vs base | training? |
+|---|---|---|---|
+| greedy base | 65.3% | — | — |
+| retrieval (BM25) | 66.0% | +0.7 | no |
+| LoRA self-train | 68.7% | +3.3 (n.s.) | yes |
+| rationalization | 60.0% | −5.3 (worse) | yes |
+| **self-consistency maj@8** | **70.7%** | **+5.3 (p=0.057)** | **no** |
+
+11 fail→pass vs 3 pass→fail; pass@8 ceiling 78%. **Self-consistency is the best method and the
+only positive lever — and it needs no training.** Held-out lift (+5.3pp) < train-pool estimate
+(+10pp) because greedy (65.3%) is a stronger baseline than temp-0.8 sampling (62.8%). More
+samples (K=16) or a verifier/best-of-N should push toward the 78% ceiling.
+
+**The story in one line:** at 1.5B on MATH, the model's bottleneck is *selection at pass@1*, not
+capability — every weight-update / steering primitive we tried is flat-to-negative, but
+training-free self-consistency captures real gain. Selection > training, at this scale.
 
 ## 8. Open items / next steps
 
