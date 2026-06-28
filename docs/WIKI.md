@@ -1016,6 +1016,64 @@ and a thinking AGENT (Qwen3-8B #17, vs its OWN base/consensus). Then test each a
   from past mistakes:" header both present in the exact string the model receives); (3) results VARY by
   config (−1.4 to −7.4%) — impossible unless the model reads them. So the BBH negative is REAL, not an
   injection bug. (Good check given past silent bugs: memory_kv archival misroute, IFEval mkdir/scorer.)
+- **★ DIAGNOSIS (2026-06-28, user: "why no improvement WHATSOEVER? useless / not-followed / orthogonal?")**
+  Ran `scripts/bbh_diag.py`: regenerate cluster-lessons (Qwen2.5-7B, v2_repro style), take 12 test cases
+  the base FAILED, generate WITH the routed lessons, compare side-by-side. **The null is largely a
+  MEASUREMENT + ROUTING ARTIFACT, not "lessons can't help reasoning."** Lessons ARE followed (answer
+  changed in 9/12). Distribution: 3 fixed / 6 changed-still-wrong / 3 unchanged. Three mechanisms cancel
+  the gains:
+  1. **Truncation (dominant, 5/12):** lessons → longer CoT → overruns the 512-tok cap → output cut off
+     BEFORE "So the answer is X" → extractor grabs a reasoning fragment → auto-wrong. e.g.
+     tracking_shuffled_objects: base ends clean, lessoned still mid-swap-8 at the cap.
+  2. **Orthogonal routing:** activation clusters ≠ skills, so tasks get a DIFFERENT skill's lesson —
+     word_sorting got a parenthesis-matching lesson; tracking/penguins/colored_objects got a
+     date-arithmetic lesson ("calculate the reference date first"). Many injected lessons are irrelevant.
+  3. **Scoring artifact:** exact-match punishes comma-vs-space. word_sorting: base sorted WRONG, lesson
+     FIXED the order, but scored wrong only because model uses commas / gold uses spaces. +1/12 correct
+     under loose scoring; word_sorting is ~unscorable by strict exact-match (model always comma-joins).
+  REFRAMED VERDICT: lessons genuinely fix several cases; gains eaten by truncation + mis-routing + brittle
+  scoring → net ~0 (exactly the flat 11/11 sweep). RESCUE EXPTS (GPU free): (1) max_new_tokens 512→1024
+  [fixes 5/12 truncation — biggest lever]; (2) normalized/official BBH scoring; (3) route by task-family
+  or instruct lesson-writer to keep answers concise + end with "the answer is X". Artifacts: results/bbh/
+  diag.json, scripts/bbh_diag.py. Stream was CUT (slow, rewrite-dominated). **Open: re-run cot_512+v2_repro
+  at 1024 tok + loose scoring to see if the null flips.**
+- **★★★ SCORER WAS BROKEN — old BBH verdict INVALID (2026-06-28, user: "we're not using OFFICIAL scoring?!").**
+  We rolled our own BBH scorer (zero-shot CoT "the answer is X" + custom normalize/extract). It is FRAGILE
+  to output format: `normalize()` only strips "(X)" parens when the string both starts "(" and ends ")",
+  so any MC answer with a trailing period ("(O).") or restated option ("(G) the purple book…") is scored
+  WRONG. It limped along for terse zero-shot answers (base ~63%) but collapses on verbose/parenthesized
+  output. Built `scripts/bbh_official.py`: OFFICIAL 3-shot CoT prompts (suzgunmirac/BIG-Bench-Hard, fetched
+  to data/bbh/cot-prompts/), 2048 tokens (no truncation), proper matching (MC→chosen option letter,
+  yes/no→first token, else normalized free-form). Generation-cached + incremental writes + live webview
+  (site/official.html). 6-task subset, 12 ex each (n=72). **Fixing the scorer moved base 1.8%→66.7% on the
+  subset (~37× undercount); 66.7% is a sane Qwen2.5-7B 3-shot number.** Corrected base vs lessoned:
+  | task | base | lessoned | Δ | (word_sorting .083/.000, logical_deduction_7 .75/.50 −.25,
+  tracking_7 .667/.75 +.083, reasoning_colored .917/.833 −.083, date_understanding .667/.917 +.25,
+  navigate .917/.917 0). **OVERALL n=72: base .667, lessoned .653, Δ −.014 (ONE example — noise).**
+  REVISED VERDICT: under a trustworthy protocol+scorer, BBH lessons are **≈ NEUTRAL** (slightly −, within
+  noise, high task variance: date +25%, logical_deduction −25%) — NOT the strong negative ("11/11 sub-base,
+  −4.6..−7.4%") we reported; that was a measurement artifact (broken scorer + 512-tok truncation × lesson
+  format drift). The old custom-scorer BBH sweep numbers (RESULTS "11/11 sub-base") are CONTAMINATED —
+  do not cite. IFEval used the OFFICIAL google-research evaluator (clean) — that positive stands.
+  GOTCHA: never roll your own benchmark scorer; use the official harness/prompts. Repo: suzgunmirac (not
+  suzgun). Artifacts: results/bbh/official.json + .jsonl, official_gen.json (cached gens — re-score for free).
+  **Open: scale official run to all 27 tasks / more examples for a significance-grade verdict.**
+- **★★★ CLEAN BBH RESULT (2026-06-28) — vLLM-accelerated, fully-consistent 3-shot, n=675.** After the user
+  pushed for full rigor (consistent protocol, real failures, feed the model its own failure, no leakage),
+  built `scripts/bbh_vllm.py` + `bbh_vllm_go.sh`/`_resume.sh`: vLLM (Qwen2.5-7B) for generation, HF only for
+  the cheap activation pass (phased — vLLM and HF never share the GPU). Pipeline: 3-shot train base (1350
+  gens via 48 parallel vLLM reqs) → correctly-scored REAL failures (226/675; 3-shot is stronger so fewer
+  than the old zero-shot 265) → activation k-means K=20 → failure-aware lessons (shown its OWN 3-shot wrong
+  answer+reasoning+correct) → 3-shot test base vs lessoned. Train/test disjoint (verified). Dual scoring.
+  RESULT (matched n=675): **STRICT base .677 = les .677 (Δ +.000); ROBUST base .696 → les .711 (Δ +.015).**
+  Net-positive per task (boolean +.24, date/colored/word_sort +.12, several +.08) vs a few −.12/−.16.
+  VERDICT: failure-aware self-lessons are **≈ neutral-to-marginally-positive on BBH reasoning** under a
+  clean protocol — the only systematic cost is reduced answer-format compliance (strict↔robust gap). NOT
+  the strong negative the broken scorer showed. With IFEval (+5.5% held-out, p=0.036): prompt-lessons RSI
+  helps instruction-following, ~break-even on reasoning. GOTCHAS: (1) vLLM 0.23 flag is
+  `--no-enable-log-requests`; (2) killing vLLM's saved PID leaves a zombie WORKER holding ~21GB — kill the
+  nvidia-smi compute-apps PID(s) instead (caused the embed-phase OOM; `_resume.sh` does it right). Artifacts:
+  results/bbh/official.json/.jsonl, cache/vllm_gen.json (1350+675 gens cached — re-score free), vllm_lessons.json.
 
 ## 11. IFEval — dose-response prompt-priming sweep (2026-06-28, decided IFEval→BBH)
 

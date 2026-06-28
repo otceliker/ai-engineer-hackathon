@@ -1,0 +1,207 @@
+{
+ "model": "Qwen__Qwen2.5-7B-Instruct",
+ "variant": "vllm-3shot-failk20",
+ "protocol": "FULL 3-shot consistent: 3-shot train base->failures->failure-aware lessons K=20->3-shot test (robust scoring)",
+ "max_new": 2048,
+ "updated": "18:21:46",
+ "done": 1350,
+ "total": 1350,
+ "tasks": [
+  {
+   "task": "boolean_expressions",
+   "base_acc": 0.68,
+   "base_n": 25,
+   "les_acc": 0.92,
+   "les_n": 25
+  },
+  {
+   "task": "causal_judgement",
+   "base_acc": 0.52,
+   "base_n": 25,
+   "les_acc": 0.48,
+   "les_n": 25
+  },
+  {
+   "task": "date_understanding",
+   "base_acc": 0.76,
+   "base_n": 25,
+   "les_acc": 0.88,
+   "les_n": 25
+  },
+  {
+   "task": "disambiguation_qa",
+   "base_acc": 0.88,
+   "base_n": 25,
+   "les_acc": 0.84,
+   "les_n": 25
+  },
+  {
+   "task": "dyck_languages",
+   "base_acc": 0.04,
+   "base_n": 25,
+   "les_acc": 0.0,
+   "les_n": 25
+  },
+  {
+   "task": "formal_fallacies",
+   "base_acc": 0.68,
+   "base_n": 25,
+   "les_acc": 0.52,
+   "les_n": 25
+  },
+  {
+   "task": "geometric_shapes",
+   "base_acc": 0.52,
+   "base_n": 25,
+   "les_acc": 0.6,
+   "les_n": 25
+  },
+  {
+   "task": "hyperbaton",
+   "base_acc": 0.92,
+   "base_n": 25,
+   "les_acc": 0.96,
+   "les_n": 25
+  },
+  {
+   "task": "logical_deduction_five_objects",
+   "base_acc": 0.6,
+   "base_n": 25,
+   "les_acc": 0.6,
+   "les_n": 25
+  },
+  {
+   "task": "logical_deduction_seven_objects",
+   "base_acc": 0.48,
+   "base_n": 25,
+   "les_acc": 0.56,
+   "les_n": 25
+  },
+  {
+   "task": "logical_deduction_three_objects",
+   "base_acc": 0.88,
+   "base_n": 25,
+   "les_acc": 0.96,
+   "les_n": 25
+  },
+  {
+   "task": "movie_recommendation",
+   "base_acc": 0.64,
+   "base_n": 25,
+   "les_acc": 0.72,
+   "les_n": 25
+  },
+  {
+   "task": "multistep_arithmetic_two",
+   "base_acc": 0.0,
+   "base_n": 25,
+   "les_acc": 0.0,
+   "les_n": 25
+  },
+  {
+   "task": "navigate",
+   "base_acc": 0.96,
+   "base_n": 25,
+   "les_acc": 0.96,
+   "les_n": 25
+  },
+  {
+   "task": "object_counting",
+   "base_acc": 0.92,
+   "base_n": 25,
+   "les_acc": 0.8,
+   "les_n": 25
+  },
+  {
+   "task": "penguins_in_a_table",
+   "base_acc": 0.96,
+   "base_n": 25,
+   "les_acc": 0.88,
+   "les_n": 25
+  },
+  {
+   "task": "reasoning_about_colored_objects",
+   "base_acc": 0.76,
+   "base_n": 25,
+   "les_acc": 0.88,
+   "les_n": 25
+  },
+  {
+   "task": "ruin_names",
+   "base_acc": 0.72,
+   "base_n": 25,
+   "les_acc": 0.8,
+   "les_n": 25
+  },
+  {
+   "task": "salient_translation_error_detection",
+   "base_acc": 0.56,
+   "base_n": 25,
+   "les_acc": 0.4,
+   "les_n": 25
+  },
+  {
+   "task": "snarks",
+   "base_acc": 0.92,
+   "base_n": 25,
+   "les_acc": 0.88,
+   "les_n": 25
+  },
+  {
+   "task": "sports_understanding",
+   "base_acc": 0.88,
+   "base_n": 25,
+   "les_acc": 0.92,
+   "les_n": 25
+  },
+  {
+   "task": "temporal_sequences",
+   "base_acc": 0.88,
+   "base_n": 25,
+   "les_acc": 0.88,
+   "les_n": 25
+  },
+  {
+   "task": "tracking_shuffled_objects_five_objects",
+   "base_acc": 0.84,
+   "base_n": 25,
+   "les_acc": 0.84,
+   "les_n": 25
+  },
+  {
+   "task": "tracking_shuffled_objects_seven_objects",
+   "base_acc": 0.76,
+   "base_n": 25,
+   "les_acc": 0.76,
+   "les_n": 25
+  },
+  {
+   "task": "tracking_shuffled_objects_three_objects",
+   "base_acc": 0.84,
+   "base_n": 25,
+   "les_acc": 0.84,
+   "les_n": 25
+  },
+  {
+   "task": "web_of_lies",
+   "base_acc": 1.0,
+   "base_n": 25,
+   "les_acc": 1.0,
+   "les_n": 25
+  },
+  {
+   "task": "word_sorting",
+   "base_acc": 0.2,
+   "base_n": 25,
+   "les_acc": 0.32,
+   "les_n": 25
+  }
+ ],
+ "overall": {
+  "base": 0.6962962962962963,
+  "base_n": 675,
+  "les": 0.7111111111111111,
+  "les_n": 675,
+  "delta": 0.014814814814814836
+ }
+}

@@ -1,6 +1,60 @@
 # BFCL V4 — online lessons-memory prompt-patching (Direction 3, current)
 
-## BBH lesson-config sweep (Qwen2.5-7B) — COMPLETE, all 11 configs sub-base (2026-06-28)
+## ★★★ BBH CLEAN RESULT — fully-consistent 3-shot, failure-aware lessons, n=675 (2026-06-28)
+
+The authoritative BBH number. One consistent protocol end-to-end (vLLM-accelerated, `scripts/bbh_vllm.py`):
+**3-shot CoT train base → correctly-scored real failures (226/675) → activation-clustered (K=20) →
+failure-aware lessons (model shown its OWN 3-shot wrong answer + reasoning + correct answer) → 3-shot
+test (base vs lessoned)**. Train→test disjoint (verified, no leakage). Matched n=675/arm, Qwen2.5-7B.
+
+| metric | base | lessoned | Δ |
+|---|---|---|---|
+| strict (official answer-format) | 0.677 | 0.677 | **+0.000** |
+| format-agnostic (reasoning) | 0.696 | 0.711 | **+0.015** |
+
+Per-task (robust) net-positive: boolean +.24, date +.12, colored_objects +.12, word_sorting +.12,
+logical_deduction_3/7 +.08, ruin_names +.08, movie +.08, geometric +.08; vs formal_fallacies −.16,
+salient_translation −.16, object_counting −.12, penguins −.08.
+
+**VERDICT:** under a trustworthy, leakage-free, consistent protocol, training-free failure-derived
+self-lessons are **≈ neutral-to-marginally-positive on BBH reasoning** (strict exact tie; +1.5%
+format-agnostic), with real positive swings on ~half the tasks. NOT the strong negative the old broken
+scorer reported. The lessons' only systematic cost is slightly reduced answer-format compliance (the
+strict↔robust gap). Combined with IFEval (clean +5.5% held-out, p=0.036): **prompt-lessons RSI clearly
+helps instruction-following and is roughly break-even on reasoning.** Supersedes all BBH sections below.
+
+---
+
+## ⚠️★ BBH CORRECTION — homemade scorer was broken; official-protocol re-measure shows lessons ≈ NEUTRAL (2026-06-28)
+
+**The BBH sections below used a rolled-our-own zero-shot scorer that is broken on multiple-choice output**
+(it only strips `(X)` parens when the string starts `(` AND ends `)`, so "(O)." or restated options score
+wrong). Re-ran on the **official BBH protocol** (3-shot CoT prompts from `suzgunmirac/BIG-Bench-Hard`,
+2048 tok, proper MC-letter / yes-no / free-form matching; `scripts/bbh_official.py`, gen-cached + live).
+
+6-task subset, 12 examples each (n=72), Qwen2.5-7B:
+
+| task | base | lessoned | Δ |
+|---|---|---|---|
+| word_sorting | 0.083 | 0.000 | −0.083 |
+| logical_deduction_7 | 0.750 | 0.500 | −0.250 |
+| tracking_shuffled_7 | 0.667 | 0.750 | +0.083 |
+| reasoning_colored_objects | 0.917 | 0.833 | −0.083 |
+| date_understanding | 0.667 | 0.917 | +0.250 |
+| navigate | 0.917 | 0.917 | 0.000 |
+| **OVERALL (n=72)** | **0.667** | **0.653** | **−0.014** |
+
+**Fixing the scorer moved base 1.8% → 66.7% on the subset (~37× undercount).** Corrected verdict: under a
+trustworthy protocol, BBH lessons are **≈ neutral** (Δ −1.4% = one example, within noise; mixed by task:
+date +25%, logical_deduction −25%) — **NOT** the strong negative the sections below report. The old
+"11/11 sub-base, −4.6..−7.4%" result is a **measurement artifact** (broken scorer + 512-tok truncation ×
+lesson-induced format drift) and should not be cited. IFEval (official google-research evaluator) is clean —
+its positive stands. Open: scale the official run to all 27 tasks / more examples for a significance-grade
+number. Lesson: never roll your own benchmark scorer.
+
+---
+
+## BBH lesson-config sweep (Qwen2.5-7B) — ⚠️ SUPERSEDED (broken scorer; see correction above) (2026-06-28)
 
 Single-pass greedy, n=216 subset, greedy base 65.7%. Ranked Δ (none beat base):
 

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BBH Official Protocol — live: base vs lessoned</title>
+<style>
+  body { font: 15px/1.5 -apple-system, system-ui, sans-serif; margin: 0; background: #0e1116; color: #e6edf3; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #8b949e; font-size: 13px; margin-bottom: 18px; }
+  .bar { height: 8px; background: #21262d; border-radius: 5px; overflow: hidden; margin: 10px 0 20px; }
+  .bar > div { height: 100%; background: linear-gradient(90deg,#1f6feb,#2ea043); transition: width .4s; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #21262d; }
+  th { color: #8b949e; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pos { color: #3fb950; } .neg { color: #f85149; } .zero { color: #8b949e; }
+  .pending { color: #6e7681; font-style: italic; }
+  tfoot td { font-weight: 700; border-top: 2px solid #30363d; border-bottom: none; }
+  .meta { color: #6e7681; font-size: 12px; margin-top: 16px; }
+  .big { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cards { display: flex; gap: 14px; margin: 6px 0 18px; }
+  .card { flex: 1; background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 14px 16px; }
+  .card .lbl { color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>BBH — Official 3-shot CoT protocol</h1>
+  <div class="sub" id="sub">loading…</div>
+  <div class="bar"><div id="prog" style="width:0%"></div></div>
+  <div class="cards">
+    <div class="card"><div class="lbl">Base</div><div class="big" id="cBase">–</div></div>
+    <div class="card"><div class="lbl">Lessoned</div><div class="big" id="cLes">–</div></div>
+    <div class="card"><div class="lbl">Delta</div><div class="big" id="cDelta">–</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Task</th><th class="num">Base</th><th class="num">Lessoned</th><th class="num">Δ</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="meta" id="meta"></div>
+</div>
+<script>
+const pct = x => x == null ? null : (x * 100).toFixed(1) + '%';
+const dcell = d => {
+  if (d == null) return '<td class="num pending">–</td>';
+  const c = d > 0.0005 ? 'pos' : d < -0.0005 ? 'neg' : 'zero';
+  const s = (d >= 0 ? '+' : '') + (d * 100).toFixed(1);
+  return `<td class="num ${c}">${s}</td>`;
+};
+async function tick() {
+  try {
+    const r = await fetch('./official.json?_=' + Date.now());
+    const d = await r.json();
+    document.getElementById('sub').textContent =
+      `${d.protocol} · ${d.model} · ${d.max_new} tok · updated ${d.updated}`;
+    const frac = d.total ? d.done / d.total : 0;
+    document.getElementById('prog').style.width = (frac * 100).toFixed(1) + '%';
+    const o = d.overall;
+    document.getElementById('cBase').textContent = pct(o.base) ?? '–';
+    document.getElementById('cLes').textContent = pct(o.les) ?? '–';
+    const dz = document.getElementById('cDelta');
+    if (o.delta != null) {
+      dz.textContent = (o.delta >= 0 ? '+' : '') + (o.delta * 100).toFixed(1);
+      dz.className = 'big ' + (o.delta > 0.0005 ? 'pos' : o.delta < -0.0005 ? 'neg' : 'zero');
+    } else dz.textContent = '–';
+    document.getElementById('rows').innerHTML = d.tasks.map(t => {
+      const delta = (t.base_acc != null && t.les_acc != null) ? t.les_acc - t.base_acc : null;
+      const b = t.base_acc == null ? '<span class="pending">…</span>' : pct(t.base_acc);
+      const l = t.les_acc == null ? '<span class="pending">…</span>' : pct(t.les_acc);
+      return `<tr><td>${t.task}</td><td class="num">${b}</td><td class="num">${l}</td>${dcell(delta)}</tr>`;
+    }).join('');
+    document.getElementById('meta').textContent =
+      `${d.done}/${d.total} generations done · base n=${o.base_n}, lessoned n=${o.les_n}`;
+  } catch (e) {
+    document.getElementById('sub').textContent = 'waiting for official.json…';
+  }
+}
+tick(); setInterval(tick, 3000);
+</script>
+</body>
+</html>
