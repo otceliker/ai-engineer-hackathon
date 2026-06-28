@@ -1,0 +1,6 @@
+{
+  "_note": "CORRECTED storage lesson (2026-06-28). The prior lesson said 'store via archival_memory_add' — but memory_kv retrieval reads CORE memory, so that misrouted facts and tanked accuracy (16.77%->4.52%). This version (a) targets CORE memory explicitly, (b) does NOT name archival, (c) is additive — encourages capturing the incidental/specific facts the baseline misses (the 111 abstentions) rather than overriding the agent's already-correct core-memory storage of obvious profile fields.",
+  "lessons": [
+    "When the user shares a specific fact — a preference, a plan, a problem, a decision, or a concrete detail such as an exact item, place, occasion, or number — record it in core memory under a clear, specific key, not only the obvious profile fields. Later questions are answered from core memory, so capture the concrete detail rather than a vague summary."
+  ]
+}

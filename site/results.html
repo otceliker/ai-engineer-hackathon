@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>BBH RSI — config sweep + RSI decomposition</title>
+<style>
+  :root{ --bg:#0d1117; --panel:#161b22; --line:#30363d; --fg:#e6edf3; --dim:#8b949e;
+         --accent:#58a6ff; --ok:#3fb950; --bad:#f85149; }
+  html,body{margin:0;background:var(--bg);color:var(--fg);font:13px/1.5 ui-monospace,Menlo,Consolas,monospace}
+  header{padding:12px 18px;border-bottom:1px solid var(--line)}
+  h1{font-size:14px;margin:0;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+  h2{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 6px}
+  .wrap{padding:16px 18px;max-width:1000px}
+  .row{display:flex;align-items:center;gap:10px;margin:3px 0}
+  .nm{width:150px;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .track{flex:1;background:#0b0f14;border:1px solid var(--line);height:16px;position:relative}
+  .fill{height:100%;background:var(--accent)}
+  .val{width:170px;text-align:right}
+  .pos{color:var(--ok)} .neg{color:var(--bad)} .dim{color:var(--dim)}
+  table{border-collapse:collapse;margin-top:6px;width:100%}
+  th,td{border:1px solid var(--line);padding:5px 9px;text-align:right}
+  th{color:var(--dim);font-weight:600;text-transform:uppercase;font-size:11px}
+  td.l,th.l{text-align:left}
+  .big{font-size:15px}
+  .note{color:var(--dim);margin:8px 2px} a{color:var(--accent)}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:1px 8px;color:var(--dim)}
+</style>
+</head>
+<body>
+<header><h1>BBH RSI — config sweep + RSI decomposition <span id="tag" class="dim"></span></h1></header>
+<div class="wrap">
+  <div id="headline"></div>
+  <h2>★ RSI signal — lessons' marginal lift at MATCHED compute (routed vs consensus baseline)</h2>
+  <div class="note">Consensus (maj@k) alone is just test-time compute. The self-improvement claim is the
+    <b>lesson Δ</b> column: routed_voteK beating base_voteK at the same sampling budget.
+    <a href="index.html">explorer</a> · <a href="stream.html">streaming</a></div>
+  <table id="rsi"></table>
+  <h2>All configs — accuracy (Δ vs greedy base)</h2>
+  <div id="bars"></div>
+</div>
+<script>
+"use strict";
+const DATA = new URLSearchParams(location.search).get("data") || "sample_results.json";
+const pct = x => (100*x).toFixed(1)+"%";
+const sgn = x => (x>=0?"+":"")+(100*x).toFixed(1)+"%";
+fetch(DATA).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(render)
+  .catch(e=>{document.getElementById("headline").innerHTML=`<span class="neg">Could not load ${DATA} (${e}). Copy lab.jsonl → site/results.json (as a JSON array).</span>`;});
+
+function render(rows){
+  const by={}; rows.forEach(r=>by[r.config]=r);
+  const greedyBase = by["v2_repro"] ? by["v2_repro"].base_acc : null;
+  document.getElementById("tag").textContent = DATA.includes("sample")?"· SAMPLE DATA":"";
+
+  // RSI decomposition table
+  const levels=[["greedy@1","v2_repro","v2_repro",true],
+                ["maj@3","base_vote3","routed_vote3",false],
+                ["maj@5","base_vote5","routed_vote5",false],
+                ["maj@9","base_vote9","routed_vote9",false]];
+  let best=-9, bestLab="";
+  let html="<tr><th class='l'>compute</th><th>consensus base</th><th>+lessons</th><th>lesson Δ (RSI)</th><th>vs greedy base</th></tr>";
+  for(const [lab,bk,rk,isGreedy] of levels){
+    const r=by[rk]; if(!r) continue;
+    const bAcc = isGreedy ? r.base_acc : (by[bk]?by[bk].acc:null);
+    if(bAcc==null) continue;
+    const rAcc = r.acc, lessonD = rAcc-bAcc;
+    const consGain = greedyBase!=null ? bAcc-greedyBase : null;
+    if(lessonD>best){best=lessonD;bestLab=lab;}
+    const cls = lessonD>0.0001?"pos":(lessonD<-0.0001?"neg":"dim");
+    html+=`<tr><td class='l'>${lab}</td><td>${pct(bAcc)}</td><td>${pct(rAcc)}</td>`+
+          `<td class='${cls}'>${sgn(lessonD)}</td><td class='dim'>${consGain==null?"—":sgn(consGain)}</td></tr>`;
+  }
+  document.getElementById("rsi").innerHTML=html;
+
+  const bestOverall = rows.reduce((a,b)=>b.acc>a.acc?b:a, rows[0]);
+  document.getElementById("headline").innerHTML =
+    `<div class="big"><span class="pill">greedy base ${greedyBase!=null?pct(greedyBase):"?"}</span> `+
+    `<span class="pill">best overall: <b>${bestOverall.config}</b> ${pct(bestOverall.acc)}</span> `+
+    `<span class="pill">best lesson-Δ (RSI): <b class="${best>0?'pos':'dim'}">${sgn(best)}</b> @ ${bestLab}</span></div>`;
+
+  // bars
+  const max=Math.max(...rows.map(r=>r.acc),0.01), box=document.getElementById("bars");
+  rows.slice().sort((a,b)=>b.acc-a.acc).forEach(r=>{
+    const d=document.createElement("div"); d.className="row";
+    const sig=(r.p!=null&&r.p<0.05)?" *":"";
+    const dcls=r.delta>0.0001?"pos":(r.delta<-0.0001?"neg":"dim");
+    d.innerHTML=`<span class="nm">${r.config}</span>`+
+      `<span class="track"><span class="fill" style="width:${100*r.acc/max}%"></span></span>`+
+      `<span class="val">${pct(r.acc)} <span class="${dcls}">(${sgn(r.delta)}${r.b!=null?` +${r.b}/-${r.c}`:""}${sig})</span></span>`;
+    box.appendChild(d);
+  });
+}
+</script>
+</body>
+</html>

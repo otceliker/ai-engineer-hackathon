@@ -1,0 +1,15 @@
+[
+  {"config":"v2_repro","acc":0.60,"base_acc":0.61,"delta":-0.01,"b":40,"c":45,"p":0.62},
+  {"config":"cot_512","acc":0.62,"base_acc":0.61,"delta":0.01,"b":48,"c":42,"p":0.55},
+  {"config":"ncand8_temp07","acc":0.615,"base_acc":0.61,"delta":0.005,"b":44,"c":42,"p":0.84},
+  {"config":"proposer_glm","acc":0.63,"base_acc":0.61,"delta":0.02,"b":50,"c":40,"p":0.32},
+  {"config":"proposer_deepseek","acc":0.625,"base_acc":0.61,"delta":0.015,"b":47,"c":41,"p":0.45},
+  {"config":"k15","acc":0.61,"base_acc":0.61,"delta":0.0,"b":42,"c":42,"p":1.0},
+  {"config":"topk2","acc":0.605,"base_acc":0.61,"delta":-0.005,"b":41,"c":44,"p":0.75},
+  {"config":"base_vote3","acc":0.66,"base_acc":0.61,"delta":0.05,"b":60,"c":25,"p":0.001},
+  {"config":"routed_vote3","acc":0.68,"base_acc":0.61,"delta":0.07,"b":66,"c":22,"p":0.0001},
+  {"config":"base_vote5","acc":0.68,"base_acc":0.61,"delta":0.07,"b":62,"c":20,"p":0.0001},
+  {"config":"routed_vote5","acc":0.71,"base_acc":0.61,"delta":0.10,"b":70,"c":18,"p":0.00001},
+  {"config":"base_vote9","acc":0.70,"base_acc":0.61,"delta":0.09,"b":66,"c":15,"p":0.00001},
+  {"config":"routed_vote9","acc":0.73,"base_acc":0.61,"delta":0.12,"b":74,"c":12,"p":0.000001}
+]

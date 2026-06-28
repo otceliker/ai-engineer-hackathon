@@ -1,0 +1,6 @@
+{
+  "_note": "ABLATION: lesson #1 only (storage discipline). The 2-lesson set regressed 16.77%->8.39% (b12/c25, McNemar p=0.047) because lesson #2 ('never answer from earlier context alone; look it up') made the agent abstain on tasks it previously answered correctly from context. Dropping lesson #2; keeping only the storage lesson, which fixed 12 abstentions.",
+  "lessons": [
+    "As the conversation unfolds, proactively store every durable fact the user reveals — preferences, personal details, plans, problems, decisions, and specific values — immediately via archival_memory_add, one fact per call, with a specific snake_case key. Do not wait to be asked, and do not store only vague summaries; capture the concrete detail (e.g. the exact item, place, occasion, or number)."
+  ]
+}

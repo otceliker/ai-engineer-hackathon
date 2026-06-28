@@ -1,0 +1,13 @@
+[
+  {"name": "v2_repro",        "k": 10, "max_lessons": 4, "n_cand": 4, "gate": false},
+  {"name": "cot_512",         "k": 10, "max_lessons": 4, "n_cand": 4, "gate": false, "cot": true, "lesson_max_new": 512},
+  {"name": "ncand8_temp07",   "k": 10, "max_lessons": 4, "n_cand": 8, "temp": 0.7, "gate": false},
+  {"name": "proposer_glm",    "k": 10, "max_lessons": 4, "n_cand": 4, "gate": false, "proposer": "glm-5.2"},
+  {"name": "proposer_deepseek","k": 10, "max_lessons": 4, "n_cand": 4, "gate": false, "proposer": "deepseek-v4-pro"},
+  {"name": "k6",              "k": 6,  "max_lessons": 4, "n_cand": 4, "gate": false},
+  {"name": "k15",             "k": 15, "max_lessons": 4, "n_cand": 4, "gate": false},
+  {"name": "topk2",           "k": 10, "max_lessons": 4, "n_cand": 4, "gate": false, "topk": 2},
+  {"name": "max_lessons2",    "k": 10, "max_lessons": 2, "n_cand": 4, "gate": false},
+  {"name": "max_lessons1",    "k": 10, "max_lessons": 1, "n_cand": 4, "gate": false},
+  {"name": "gated_ref",       "k": 10, "max_lessons": 4, "n_cand": 4, "gate": true, "dev_cap": 3}
+]

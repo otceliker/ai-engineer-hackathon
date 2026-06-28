@@ -1,0 +1,7 @@
+{
+  "_note": "Evidence-backed lessons for the bfcl memory_kv agentic task, derived from the Qwen3-4B-Instruct-2507 baseline failure triage (2026-06-27): 111/129 failures were honest abstentions because the agent never stored the fact. Ordered by measured impact. Injected into bfcl's system_prompt_pre_processing_chat_model via LESSONS_FILE env var.",
+  "lessons": [
+    "As the conversation unfolds, proactively store every durable fact the user reveals — preferences, personal details, plans, problems, decisions, and specific values — immediately via archival_memory_add, one fact per call, with a specific snake_case key. Do not wait to be asked, and do not store only vague summaries; capture the concrete detail (e.g. the exact item, place, occasion, or number).",
+    "Before answering a retrieval question, query memory with a tool call in the required [func_name(params)] format; never answer from earlier conversation context alone."
+  ]
+}

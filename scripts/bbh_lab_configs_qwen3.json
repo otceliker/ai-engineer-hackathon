@@ -1,0 +1,6 @@
+[
+  {"name": "v2_repro",        "k": 10, "max_lessons": 4, "n_cand": 4, "gate": false},
+  {"name": "cot_512",         "k": 10, "max_lessons": 4, "n_cand": 4, "gate": false, "cot": true, "lesson_max_new": 512},
+  {"name": "proposer_glm",    "k": 10, "max_lessons": 4, "n_cand": 4, "gate": false, "proposer": "glm-5.2"},
+  {"name": "gated_ref",       "k": 10, "max_lessons": 4, "n_cand": 4, "gate": true, "dev_cap": 3}
+]

@@ -1,0 +1,838 @@
+{
+ "model": "Qwen2.5-7B-Instruct (SAMPLE DATA)",
+ "K": 4,
+ "arms": {
+  "base": {
+   "acc": 0.4375,
+   "b": 0,
+   "c": 0,
+   "p": 1.0
+  },
+  "global": {
+   "acc": 0.625,
+   "b": 4,
+   "c": 1,
+   "p": 0.2
+  },
+  "routed": {
+   "acc": 0.625,
+   "b": 4,
+   "c": 1,
+   "p": 0.2
+  }
+ },
+ "clusters": [
+  {
+   "id": 0,
+   "name": "Nested bracket matching",
+   "size": 14,
+   "lessons": [
+    "Start from the innermost brackets and match each opener to its closer.",
+    "Track the open-bracket stack and emit closers in reverse order."
+   ],
+   "centroid": [
+    -4,
+    0,
+    0
+   ]
+  },
+  {
+   "id": 1,
+   "name": "Date arithmetic",
+   "size": 11,
+   "lessons": [
+    "Identify the reference date, then add or subtract the stated offset carefully."
+   ],
+   "centroid": [
+    4,
+    1,
+    -1
+   ]
+  },
+  {
+   "id": 2,
+   "name": "Sarcasm detection",
+   "size": 10,
+   "lessons": [
+    "Look for contradiction or exaggeration that signals sarcasm."
+   ],
+   "centroid": [
+    0,
+    4,
+    2
+   ]
+  },
+  {
+   "id": 3,
+   "name": "Constraint ordering",
+   "size": 8,
+   "lessons": [
+    "Translate each clue into an ordering constraint, then resolve them jointly."
+   ],
+   "centroid": [
+    1,
+    -4,
+    1
+   ]
+  }
+ ],
+ "train_points": [
+  {
+   "xyz": [
+    -3.9425888128891304,
+    -1.1477498716206311,
+    -0.07370716730196378
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -2.685778653375001,
+    -1.5918354390701024,
+    1.0827735063713129
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -4.411484531685402,
+    1.1821154243569612,
+    -2.081159919837355
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -5.202407585390001,
+    -0.8946900934521835,
+    -0.02635479588046337
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -3.9443307991010204,
+    -1.5258078499764378,
+    -0.007675373531440587
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -1.5874585668587904,
+    1.9937077957711735,
+    -0.21648840418996795
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -3.225631362794795,
+    -0.5466671199115031,
+    -0.29758340458974036
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -6.335754408312626,
+    -0.5011155565180574,
+    -1.1380211634641206
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -3.053322295907245,
+    0.6941946735832907,
+    -1.8644238949785314
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -5.559968315460364,
+    1.2249802134665186,
+    -0.26086269707298076
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -3.4336174601404057,
+    -0.6399184845786188,
+    0.4702573477085015
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -5.30547381685612,
+    1.7476066143666806,
+    0.15458670283346274
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -5.652149219975789,
+    1.2191168432716897,
+    -0.025875463856926444
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -4.045800268773028,
+    -2.2102381694549025,
+    0.08923476330570884
+   ],
+   "cluster": 0,
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    3.7879616715906512,
+    -0.7024150432550047,
+    1.2646351696076525
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    4.946125885628021,
+    1.3508526629437276,
+    0.9525776842970952
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    4.8607362613969025,
+    2.0742969235629864,
+    1.9209215752151367
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    5.885129947910798,
+    3.7405953216038794,
+    -3.7375908511389224
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    3.0703589080728717,
+    1.0626717452340637,
+    -1.1450223338127725
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    4.549173051237881,
+    -0.23521728881647053,
+    1.1576679905707201
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    4.57146642113019,
+    2.8871523085260895,
+    -1.8664087982701778
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    3.735065314654371,
+    2.6500879807196336,
+    0.07107014107165655
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    3.665072651928816,
+    1.747448849258949,
+    -0.17573811522666816
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    5.868210711470773,
+    4.036820396540749,
+    -0.36169823422082437
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    3.973718410326989,
+    1.415392830263726,
+    -1.2516135833259565
+   ],
+   "cluster": 1,
+   "task": "date_understanding",
+   "prompt": "[date_understanding] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -0.5237644716567118,
+    5.874430085763123,
+    1.0207865798124471
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    1.9986877477936535,
+    2.5125194808525877,
+    0.9394111837750663
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -0.2765784502634716,
+    3.7550573753646197,
+    1.151263845215646
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    0.8083847103638945,
+    2.017762474904075,
+    3.160563502785528
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -0.8997702968085185,
+    5.376759619978053,
+    1.5504139222027986
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -1.5389622070050795,
+    4.4940261682302225,
+    4.453188108265943
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -0.05769168047519119,
+    4.122633428808849,
+    1.5606885041064686
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -0.9641810585861524,
+    3.1735409011135483,
+    0.5472121719315715
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -1.549934838453746,
+    4.078031818692995,
+    3.7821005715751523
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    0.5754051948617748,
+    4.52116659367851,
+    2.2734624152188796
+   ],
+   "cluster": 2,
+   "task": "snarks",
+   "prompt": "[snarks] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    0.04944657197539193,
+    -3.500748246159505,
+    1.3656474316089482
+   ],
+   "cluster": 3,
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    0.8919266034264632,
+    -4.316764392176011,
+    -1.1586922203689878
+   ],
+   "cluster": 3,
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    -0.08060488914118258,
+    -5.623676140865961,
+    0.6456468200424179
+   ],
+   "cluster": 3,
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    2.5398149922497595,
+    -3.7392599535730704,
+    -0.1310541957460194
+   ],
+   "cluster": 3,
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    0.10732946540673138,
+    -4.820047367849986,
+    1.66797135792347
+   ],
+   "cluster": 3,
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    1.2972767896067117,
+    -4.036574766189983,
+    3.776445580430796
+   ],
+   "cluster": 3,
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    1.3797897947349684,
+    -3.7752153141423266,
+    1.5191956116356866
+   ],
+   "cluster": 3,
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] example train failure prompt \u2026"
+  },
+  {
+   "xyz": [
+    1.4844326429294719,
+    -2.08448038141505,
+    1.2178808184874983
+   ],
+   "cluster": 3,
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] example train failure prompt \u2026"
+  }
+ ],
+ "test_items": [
+  {
+   "key": "logical_deduction__0",
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] incoming test prompt #0 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    0.8840522931948571,
+    -3.5103980327791637,
+    1.2304053584641559
+   ],
+   "routed_cluster": 3,
+   "routed_cluster_name": "Constraint ordering",
+   "routed_lessons": [
+    "Translate each clue into an ordering constraint, then resolve them jointly."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": false,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": false
+  },
+  {
+   "key": "snarks__1",
+   "task": "snarks",
+   "prompt": "[snarks] incoming test prompt #1 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    -0.3967415892944582,
+    3.9909333385869954,
+    5.361890988280153
+   ],
+   "routed_cluster": 2,
+   "routed_cluster_name": "Sarcasm detection",
+   "routed_lessons": [
+    "Look for contradiction or exaggeration that signals sarcasm."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": true,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "date_understanding__2",
+   "task": "date_understanding",
+   "prompt": "[date_understanding] incoming test prompt #2 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    6.472414500644957,
+    -1.9668042198092537,
+    -0.43822683634802373
+   ],
+   "routed_cluster": 1,
+   "routed_cluster_name": "Date arithmetic",
+   "routed_lessons": [
+    "Identify the reference date, then add or subtract the stated offset carefully."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": true,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "date_understanding__3",
+   "task": "date_understanding",
+   "prompt": "[date_understanding] incoming test prompt #3 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    4.268521085080191,
+    -1.4536675689234464,
+    -0.5461922048518332
+   ],
+   "routed_cluster": 1,
+   "routed_cluster_name": "Date arithmetic",
+   "routed_lessons": [
+    "Identify the reference date, then add or subtract the stated offset carefully."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": false,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "snarks__4",
+   "task": "snarks",
+   "prompt": "[snarks] incoming test prompt #4 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    0.697605461593416,
+    3.884553978957605,
+    1.803084554806521
+   ],
+   "routed_cluster": 2,
+   "routed_cluster_name": "Sarcasm detection",
+   "routed_lessons": [
+    "Look for contradiction or exaggeration that signals sarcasm."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": true,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "logical_deduction__5",
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] incoming test prompt #5 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    2.7596388703728763,
+    -5.003517314090814,
+    -0.5681690997620252
+   ],
+   "routed_cluster": 3,
+   "routed_cluster_name": "Constraint ordering",
+   "routed_lessons": [
+    "Translate each clue into an ordering constraint, then resolve them jointly."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": false,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": false
+  },
+  {
+   "key": "date_understanding__6",
+   "task": "date_understanding",
+   "prompt": "[date_understanding] incoming test prompt #6 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    5.31999683088144,
+    0.9329701761807638,
+    -2.2649699882274934
+   ],
+   "routed_cluster": 1,
+   "routed_cluster_name": "Date arithmetic",
+   "routed_lessons": [
+    "Identify the reference date, then add or subtract the stated offset carefully."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": false,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "dyck_languages__7",
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] incoming test prompt #7 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    -3.8773969722624417,
+    -1.600674201038351,
+    -1.6126400862964232
+   ],
+   "routed_cluster": 0,
+   "routed_cluster_name": "Nested bracket matching",
+   "routed_lessons": [
+    "Start from the innermost brackets and match each opener to its closer.",
+    "Track the open-bracket stack and emit closers in reverse order."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": true,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "date_understanding__8",
+   "task": "date_understanding",
+   "prompt": "[date_understanding] incoming test prompt #8 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    2.663591252471062,
+    -0.7443071833018544,
+    0.040208802047406955
+   ],
+   "routed_cluster": 1,
+   "routed_cluster_name": "Date arithmetic",
+   "routed_lessons": [
+    "Identify the reference date, then add or subtract the stated offset carefully."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": false,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "dyck_languages__9",
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] incoming test prompt #9 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    -3.4673964750209767,
+    0.8401794731216515,
+    -2.087916180405758
+   ],
+   "routed_cluster": 0,
+   "routed_cluster_name": "Nested bracket matching",
+   "routed_lessons": [
+    "Start from the innermost brackets and match each opener to its closer.",
+    "Track the open-bracket stack and emit closers in reverse order."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": false,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": false
+  },
+  {
+   "key": "logical_deduction__10",
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] incoming test prompt #10 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    1.705554439594602,
+    -6.194849463890117,
+    0.009446616172568256
+   ],
+   "routed_cluster": 3,
+   "routed_cluster_name": "Constraint ordering",
+   "routed_lessons": [
+    "Translate each clue into an ordering constraint, then resolve them jointly."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": true,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "dyck_languages__11",
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] incoming test prompt #11 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    -4.456632717876456,
+    -1.452302711983664,
+    2.293554650326451
+   ],
+   "routed_cluster": 0,
+   "routed_cluster_name": "Nested bracket matching",
+   "routed_lessons": [
+    "Start from the innermost brackets and match each opener to its closer.",
+    "Track the open-bracket stack and emit closers in reverse order."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": true,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": false
+  },
+  {
+   "key": "dyck_languages__12",
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] incoming test prompt #12 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    -6.0234364746889035,
+    -0.5968941211187357,
+    1.4524192348123954
+   ],
+   "routed_cluster": 0,
+   "routed_cluster_name": "Nested bracket matching",
+   "routed_lessons": [
+    "Start from the innermost brackets and match each opener to its closer.",
+    "Track the open-bracket stack and emit closers in reverse order."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": false,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": false
+  },
+  {
+   "key": "logical_deduction__13",
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] incoming test prompt #13 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    0.608216834035443,
+    -4.4337769152677975,
+    0.36974313578278806
+   ],
+   "routed_cluster": 3,
+   "routed_cluster_name": "Constraint ordering",
+   "routed_lessons": [
+    "Translate each clue into an ordering constraint, then resolve them jointly."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": true,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "logical_deduction__14",
+   "task": "logical_deduction",
+   "prompt": "[logical_deduction] incoming test prompt #14 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    -3.071008618582373,
+    -3.7625121434524904,
+    1.005063450577349
+   ],
+   "routed_cluster": 3,
+   "routed_cluster_name": "Constraint ordering",
+   "routed_lessons": [
+    "Translate each clue into an ordering constraint, then resolve them jointly."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": false,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": true
+  },
+  {
+   "key": "dyck_languages__15",
+   "task": "dyck_languages",
+   "prompt": "[dyck_languages] incoming test prompt #15 \u2026",
+   "gold": "(A)",
+   "xyz": [
+    -4.693657422726624,
+    -0.5891453897930183,
+    -0.7237175554521713
+   ],
+   "routed_cluster": 0,
+   "routed_cluster_name": "Nested bracket matching",
+   "routed_lessons": [
+    "Start from the innermost brackets and match each opener to its closer.",
+    "Track the open-bracket stack and emit closers in reverse order."
+   ],
+   "base_output": "\u2026 model reasoning without lessons \u2026 So the answer is (B).",
+   "base_correct": false,
+   "routed_output": "\u2026 reasoning guided by the routed lesson \u2026 So the answer is (A).",
+   "routed_correct": false
+  }
+ ]
+}

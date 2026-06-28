@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Streaming RSI — lessons vs control over a task stream</title>
+<style>
+  :root{ --bg:#0d1117; --panel:#161b22; --line:#30363d; --fg:#e6edf3; --dim:#8b949e;
+         --les:#3fb950; --ctrl:#8b949e; --clu:#58a6ff; --accent:#58a6ff; }
+  html,body{margin:0;background:var(--bg);color:var(--fg);
+    font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  header{padding:12px 18px;border-bottom:1px solid var(--line)}
+  h1{font-size:14px;margin:0;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+  .wrap{padding:16px 18px;max-width:1100px}
+  .head-nums{display:flex;gap:26px;margin:6px 0 16px;flex-wrap:wrap;align-items:baseline}
+  .stat{display:flex;flex-direction:column}
+  .stat .v{font-size:26px}
+  .stat .l{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  .les{color:var(--les)} .ctrl{color:var(--ctrl)} .clu{color:var(--clu)}
+  .gap{font-size:30px}
+  #chart{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px}
+  .legend{display:flex;gap:18px;margin:8px 2px;color:var(--dim);flex-wrap:wrap}
+  .legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px}
+  .axis path,.axis line{stroke:#30363d} .axis text{fill:#8b949e;font-size:10px}
+  .note{color:var(--dim);margin:10px 2px}
+  .cl{border:1px solid var(--line);border-left:3px solid var(--clu);border-radius:4px;background:#0b0f14;
+      padding:7px 9px;margin:5px 0}
+  .cl ul{margin:4px 0 0;padding-left:16px} .cl li{margin:2px 0}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<header><h1>Streaming RSI <span id="modeltag" class="dim"></span> · lessons learned online vs a no-lessons control</h1></header>
+<div class="wrap">
+  <div class="head-nums" id="nums"></div>
+  <div id="chart"></div>
+  <div class="legend">
+    <span><i style="background:var(--les)"></i>lessoned (cumulative acc)</span>
+    <span><i style="background:var(--ctrl)"></i>control — no lessons (cumulative acc)</span>
+    <span><i style="background:var(--clu)"></i>clusters discovered (right axis)</span>
+  </div>
+  <p class="note">RSI signal = the <b class="les">gap</b> between lessoned and control widening as the stream
+    flows: the model's self-written, self-routed lessons beating its own no-lessons baseline at equal compute.
+    A rising lessoned curve alone is not enough — the <i>gap</i> is the claim. <a href="index.html">← back to explorer</a></p>
+  <h1 style="margin-top:18px">Lesson library grown online</h1>
+  <div id="clusters"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script>
+"use strict";
+const DATA = new URLSearchParams(location.search).get("data") || "sample_stream.json";
+const esc = s => (s==null?"":String(s)).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+fetch(DATA).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(render)
+  .catch(e=>{document.getElementById("nums").innerHTML=`<span class="ctrl">Could not load ${DATA} (${e}). Serve site/ and pass ?data=stream.json once the run lands.</span>`;});
+
+function render(d){
+  document.getElementById("modeltag").textContent = "· " + (d.model||"");
+  const gap = (d.final_lessoned-d.final_control);
+  document.getElementById("nums").innerHTML = `
+    <div class="stat"><span class="v les">${(100*d.final_lessoned).toFixed(1)}%</span><span class="l">lessoned (final)</span></div>
+    <div class="stat"><span class="v ctrl">${(100*d.final_control).toFixed(1)}%</span><span class="l">control (final)</span></div>
+    <div class="stat"><span class="v gap ${gap>=0?'les':'ctrl'}">${gap>=0?'+':''}${(100*gap).toFixed(1)}%</span><span class="l">RSI gap (lessons − control)</span></div>
+    <div class="stat"><span class="v clu">${d.clusters?d.clusters.length:0}</span><span class="l">clusters grown</span></div>
+    <div class="stat"><span class="v">${d.n}</span><span class="l">stream length</span></div>`;
+
+  const S=d.steps, W=940, H=380, m={t:14,r:48,b:34,l:42};
+  const x=d3.scaleLinear().domain([0,S.length-1]).range([m.l,W-m.r]);
+  const y=d3.scaleLinear().domain([0,1]).range([H-m.b,m.t]);
+  const maxClu=Math.max(1,d3.max(S,s=>s.n_clusters));
+  const yc=d3.scaleLinear().domain([0,maxClu]).range([H-m.b,m.t]);
+  const svg=d3.select("#chart").append("svg").attr("width",W).attr("height",H);
+  svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-m.b})`).call(d3.axisBottom(x).ticks(8));
+  svg.append("g").attr("class","axis").attr("transform",`translate(${m.l},0)`).call(d3.axisLeft(y).ticks(6).tickFormat(d3.format(".0%")));
+  svg.append("g").attr("class","axis").attr("transform",`translate(${W-m.r},0)`).call(d3.axisRight(yc).ticks(maxClu>6?6:maxClu));
+  const line=(acc,col,w)=>svg.append("path").datum(S).attr("fill","none").attr("stroke",col).attr("stroke-width",w)
+     .attr("d",d3.line().x(s=>x(s.t)).y(s=>y(s[acc])));
+  // cluster step area (right axis)
+  svg.append("path").datum(S).attr("fill","#58a6ff22").attr("stroke","none")
+     .attr("d",d3.area().curve(d3.curveStepAfter).x(s=>x(s.t)).y0(H-m.b).y1(s=>yc(s.n_clusters)));
+  line("cum_control","#8b949e",1.5);
+  line("cum_lessoned","#3fb950",2.2);
+
+  const box=d3.select("#clusters");
+  (d.clusters||[]).forEach(c=>{
+    const div=box.append("div").attr("class","cl");
+    div.append("div").html(`<b class="clu">cluster ${c.id}</b> <span class="ctrl">n=${c.size}</span>`);
+    const ul=div.append("ul");
+    (c.lessons&&c.lessons.length?c.lessons:["(no lesson)"]).forEach(l=>ul.append("li").text(l));
+  });
+}
+</script>
+</body>
+</html>

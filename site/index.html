@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>RSI explorer — self-clustered lessons on BBH</title>
+<style>
+  :root{ --bg:#0d1117; --panel:#161b22; --line:#30363d; --fg:#e6edf3; --dim:#8b949e;
+         --ok:#3fb950; --bad:#f85149; --same:#6e7681; --accent:#58a6ff; }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
+    font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  #app{display:grid;grid-template-columns:1fr 1fr;height:100vh}
+  .col{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line)}
+  h1{font-size:13px;margin:0;padding:10px 14px;border-bottom:1px solid var(--line);color:var(--dim);
+     font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  h2{font-size:11px;color:var(--dim);margin:0;padding:8px 14px 4px;text-transform:uppercase;letter-spacing:.05em}
+  #scene{flex:1 1 auto;min-height:240px;position:relative}
+  #scene canvas{display:block}
+  .left-bottom{flex:0 0 auto;border-top:1px solid var(--line);overflow:auto;max-height:42%}
+  #bars{padding:6px 14px 12px}
+  .bar-row{display:flex;align-items:center;gap:8px;margin:3px 0}
+  .bar-lab{width:56px;color:var(--dim)}
+  .bar-track{flex:1;background:#0b0f14;border:1px solid var(--line);height:14px;position:relative}
+  .bar-fill{height:100%;background:var(--accent)}
+  .bar-val{width:96px;text-align:right;color:var(--fg)}
+  #clusters{padding:0 14px 14px}
+  .cl{padding:7px 9px;border:1px solid var(--line);border-left-width:3px;margin:5px 0;border-radius:4px;background:#0b0f14}
+  .cl .ttl{display:flex;justify-content:space-between;color:var(--dim)}
+  .cl ul{margin:5px 0 0;padding-left:16px}
+  .cl li{color:var(--fg);margin:2px 0}
+  #list{flex:1 1 auto;overflow:auto}
+  .item{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid #1f242c;cursor:pointer}
+  .item:hover{background:#1b2129}
+  .item.sel{background:#1f2630;border-left:3px solid var(--accent);padding-left:11px}
+  .item .task{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .badge{font-size:11px;padding:1px 6px;border-radius:10px;border:1px solid}
+  .b-fixed{color:var(--ok);border-color:var(--ok)}
+  .b-broke{color:var(--bad);border-color:var(--bad)}
+  .b-same{color:var(--same);border-color:var(--same)}
+  #detail{flex:0 0 auto;border-top:1px solid var(--line);max-height:52%;overflow:auto;padding:10px 14px}
+  #detail .muted{color:var(--dim)}
+  #detail pre{white-space:pre-wrap;background:#0b0f14;border:1px solid var(--line);border-radius:4px;
+     padding:8px;margin:4px 0 10px;max-height:150px;overflow:auto}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .tag{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--dim)}
+  .ok{color:var(--ok)} .bad{color:var(--bad)}
+  .toolbar{padding:6px 14px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;color:var(--dim)}
+  .toolbar button{background:#0b0f14;color:var(--fg);border:1px solid var(--line);border-radius:4px;
+     padding:3px 9px;cursor:pointer;font:inherit}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="col">
+    <h1>What the model learned <span id="modeltag" class="muted"></span></h1>
+    <div id="scene"></div>
+    <div class="left-bottom">
+      <h2>Held-out accuracy by arm</h2>
+      <div id="bars"></div>
+      <h2>Self-written lessons per cluster</h2>
+      <div id="clusters"></div>
+    </div>
+  </div>
+  <div class="col" style="border-right:none">
+    <h1>Inference stream</h1>
+    <div class="toolbar">
+      <span id="counts"></span>
+      <button id="play">▶ play</button>
+      <span class="muted">click a task to inspect</span>
+    </div>
+    <div id="list"></div>
+    <div id="detail"><span class="muted">Select a task on the left list…</span></div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="app.js"></script>
+</body>
+</html>
