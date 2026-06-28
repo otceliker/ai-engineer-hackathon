@@ -1003,6 +1003,13 @@ and a thinking AGENT (Qwen3-8B #17, vs its OWN base/consensus). Then test each a
   for lesson-based RSI on BBH: consensus lifts accuracy (+~5%, compute) but learned lessons do not beat a
   matched baseline (maj@5 lesson Δ +0.5% p=1.0). Qwen3-8B (no-think) base build running (~20min). Logged
   to RESULTS.md. Pending: Qwen3-8B 4 configs + stream, then final cross-model verdict + Qwen3 dashboard.
+- **Qwen3-8B (2026-06-28):** no-think base = **train 47.6% / test 48.3%** — much WEAKER than Qwen2.5-7B
+  (63.1%); disabling thinking cripples Qwen3 on BBH reasoning (its whole edge is thinking). Then the
+  Qwen3 CONFIG sweep CRASHED: **CUDA OOM** in the embed step (8B HF fp16 + output_hidden_states for all
+  layers at emb_bs 16 > 24GB). lab_qwen3.jsonl empty; wrapper proceeded to STREAM (Qwen2.5, now running).
+  GOTCHA: for 8B HF, use gen_bs/emb_bs 4 (not 16). Base cache for Qwen3 IS written (base completed);
+  retry configs with --gen-bs 4 --emb-bs 4 (reuses base, rebuilds embed at bs4) after stream — LOW value
+  though (no-think Qwen3 base weak; lessons unlikely to help where they didn't on the stronger Qwen2.5).
 - **VERIFICATION (2026-06-28, user asked "are lessons reaching the model?"):** YES, confirmed 3 ways —
   (1) lessons_per_cluster non-empty for every config ([4,4,..]/[2,..]/[1,..]); (2) direct CPU test:
   solve_msgs→apply_chat_template embeds the lesson in the SYSTEM prompt (unique marker + "Lessons learned
