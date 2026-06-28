@@ -400,6 +400,27 @@ Two actionable findings: (1) **rationalization actively hurts** at this scale; (
 marginal value the self-generated pool holds is **fully captured in-context** — no training
 needed. A clean, well-instrumented negative result. Honest > hockey-stick.
 
+## The positive result: it's a SELECTION problem, not a capability problem
+
+`scripts/pass_at_k.py` computes pass@k + majority-vote from the saved harvest attempts
+(K=6, temp 0.8). The 1.5B has large **latent** capability that a single sample doesn't realize:
+
+| category | pass@1 | majority-vote@6 (training-free) | pass@6 ceiling |
+|---|---|---|---|
+| Prealgebra | 59.8% | **69.8% (+10.0pp)** | 76.0% |
+| Counting & Probability | 31.4% | **40.2% (+8.8pp)** | 51.5% |
+
+**Self-consistency (majority vote over 6 samples, NO training) captures ~half the pass@1→pass@6
+gap — ~+9–10pp — which dwarfs every self-training/steering result** (all flat-to-negative,
+best non-significant ~+3pp). Reframe: at 1.5B the bottleneck is **selection at pass@1**, not
+capability. Weight updates (LoRA/rationalization) couldn't realize the latent skill; cheap
+inference-time selection does. This is "what we can do with 1B."
+
+Caveat: these numbers are on the 400-problem **train pool** (temp 0.8, same set for pass@1 and
+maj). Held-out confirmation (maj@K on the same 150 held-out vs the 65.3% greedy baseline) is the
+clean comparable claim — pending. Selection ceiling is pass@6 (76% / 51.5%); a verifier/reward
+model could push toward it (best-of-N), but majority vote is the free first win.
+
 ## 8. Open items / next steps
 
 - [ ] Restore neptune `llm-server.service` at hackathon end (`sudo systemctl start`).

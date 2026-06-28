@@ -36,6 +36,7 @@ TARGETS = {
     "qwen":          dict(repo="Qwen/Qwen2.5-Math-1.5B-Instruct",          kind="model", gated=False),
     "qwen25-general": dict(repo="Qwen/Qwen2.5-1.5B-Instruct",              kind="model", gated=False),
     "qwen3":         dict(repo="Qwen/Qwen3-1.7B",                          kind="model", gated=False),
+    "qwen7b":        dict(repo="Qwen/Qwen2.5-7B-Instruct",                 kind="model", gated=False),
     "llama":         dict(repo="meta-llama/Llama-3.2-1B-Instruct",         kind="model", gated=True),
     "math":          dict(repo="nlile/hendrycks-MATH-benchmark",           kind="dataset", gated=False),
 }
